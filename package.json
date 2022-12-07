@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.2.3",
+    "jquery": "^3.6.1"
+  },
+  "devDependencies": {
+    "sass": "^1.56.1"
+  }
+}
