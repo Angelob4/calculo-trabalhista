@@ -5,84 +5,121 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/index.css">
-    <title>Calculo Trabalhista</title>
+    <title>Trabalhistas</title>
 </head>
 
 <body>
 
     <!-- navbar -->
     <nav>
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <h2>Trabalhistas</h2>
-                </div>
-            </div>
-        </div>
+        <h2>Trabalhistas</h2>
     </nav>
 
-
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
                 <h1>Rescisão de contrato de trabalho - CLT</h1>
             </div>
         </div>
 
-        <div class="row row-cols-1 section period-job yin">
+        <div class="row">
 
-            <div class="col-12">
-                <p>Período trabalhado</p>
-            </div>
+            <!-- calc content -->
+            <div class="col-sm-12 col-xl-6 ">
+                <div class="main-content">
+                    <!-- período trabalhado -->
+                    <div class="row  section period-job yin">
 
-            <!-- periodo trabalhado -->
-            <div class="col-sm-12">
-                <label for="">Data que foi contratado</label>
-                <div class="group-data">
-                    <select name="days"></select>
-                    <select name="months"></select>
-                    <select name="years"></select>
+                        <div class="col-12">
+                            <p>Período trabalhado</p>
+                        </div>
+
+                        <!-- periodo trabalhado -->
+                        <div class="col-sm-12 group-selects-date">
+                            <label for="">Data que foi contratado</label>
+                            <select name="days"></select>
+                            <select name="months"></select>
+                            <select name="years"></select>
+                        </div>
+
+                        <!-- data do final da relação -->
+                        <div class="col-sm-12 group-selects-date">
+                            <label for="">Data do final da relação de trabalho </label>
+                            <select name="work-out-days"></select>
+                            <select name="work-out-months"></select>
+                            <select name="work-out-years" class=""></select>
+                            <small class=""> Caso o aviso prévio seja trabalhado, o último dia do aviso prévio.</small>
+                        </div>
+                    </div>
+
+                    <!-- motivo -->
+                    <div class="row  section reason-job">
+                        <div class="col-12">
+                            <p>Motivo da rescisão</p>
+                        </div>
+
+                        <!-- razao -->
+                        <div class="col-sm-12">
+                            <label for="">Tipo de afastamento</label>
+                            <select name="reason">
+                                <option value="0">Escolha uma opção</option>
+                                <option value="1">Pedido de demissão</option>
+                                <option value="2">Dispensa sem justa causa</option>
+                                <option value="3">Dispensa com justa causa</option>
+                                <option value="4">Término de contrato de experiência</option>
+                                <option value="5">Rescisão antecipada do contrato de experiência pelo empregador</option>
+                                <option value="6">Rescisão antecipada de contrato de experiência pelo empregado</option>
+                            </select>
+                        </div>
+
+                        <!-- aviso prévio -->
+                        <div class="col">
+                            <label for="notice"> O aviso prévio foi:</label>
+                            <select name="notice" id="notice" class="data">
+                                <option value="0">trabalhado</option>
+                                <option value="1">indenizado</option>
+                                </select>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row section money">
+                        <div class="col-sm-12">
+                            <p>Salário</p>
+                        </div>
+                        <div class="col">
+                            <label for="">Valor do último salário Bruto:</label>
+                            <input type="text" name="money">
+                        </div>
+                    </div>
+
+                    <div class="row section yang">
+                        <div class="col-sm-12">
+                            <p>Família</p>
+                        </div>
+                        <div class="col">
+                            <label for="">Número de dependetes</label>
+                            <input type="number" name="qty-depedent" id="">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- data do final da relação -->
-            <div class="col-sm-12">
-                <label class="" for="">Data do final da relação de trabalho </label>
-                <select name="days"></select>
-                <select name="months"></select>
-                <select name="years" class=""></select>
-                <small class=""> Caso o aviso prévio seja trabalhado, o último dia do aviso prévio.</small>
+            <div class="col-sm-12 col-xl-6 result">
+                teste de resultado etc
             </div>
-
         </div>
-
-        <div class="row row-cols-1 section reason-job yang">
-
-            <div class="col-12">
-                <p>Motivo da rescisão</p>
-            </div>
-
-            <!-- razao -->
-            <div class="col-sm-12">
-                <label for="">Tipo de afastamento</label>
-                <select name="reason">
-                    <option>Pedido de demissão</option>
-                    <option>Dispensa sem justa causa</option>
-                    <option>Dispensa com justa causa</option>
-                    <option>Término de contrato de experiência</option>
-                    <option>Rescisão antecipada do contrato de experiência pelo empregador</option>
-                    <option>Rescisão antecipada de contrato de experiência pelo empregado</option>
-                </select>
-            </div>
-
-        </div>
-
     </div>
+
+
 
 </body>
 
-<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="assets/js/index.js"></script>
 
 </html>
