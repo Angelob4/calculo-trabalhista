@@ -1,29 +1,38 @@
 const hiredDate = {
-    day   : $("select[name='days']"),
+    day: $("select[name='days']"),
     months: $("select[name='months']"),
-    years : $("select[name='years']"),
+    years: $("select[name='years']"),
 };
 
 const workOutDate = {
-    day   : $("select[name='work-out-days']"),
+    day: $("select[name='work-out-days']"),
     months: $("select[name='work-out-months']"),
-    years : $("select[name='work-out-years']"),
+    years: $("select[name='work-out-years']"),
 };
 
 const months = {
-    1 : 'janeiro',
-    2 : 'fevereiro',
-    3 : 'março',
-    4 : 'abril',
-    5 : 'maio',
-    6 : 'junho',
-    7 : 'julho',
-    8 : 'agosto',
-    9 : 'setembro',
+    1: 'janeiro',
+    2: 'fevereiro',
+    3: 'março',
+    4: 'abril',
+    5: 'maio',
+    6: 'junho',
+    7: 'julho',
+    8: 'agosto',
+    9: 'setembro',
     10: 'outubro',
     11: 'novembro',
     12: 'dezembro',
 };
+
+function isDatesWithSameYear() {
+    return workOutDate.years.val() == hiredDate.years.val()
+}
+
+function isDatesWithSameMonth() {
+    return workOutDate.months.val() == hiredDate.months.val()
+}
+
 
 /**
  * Retorna se o ano é bicesto
@@ -31,7 +40,7 @@ const months = {
  * @returns Boolean
  */
 function isBicestYear(year) {
-    
+
     if (year % 4 == 0) {
         if (year % 100 == 0) {
             if (year % 400 == 0) {
@@ -53,25 +62,25 @@ function isBicestYear(year) {
  * @param {Number} year 
  * @returns Number
  */
-function getMaxDaysInMonth(mounth, year){
-    
+function getMaxDaysInMonth(mounth, year) {
+
     let daysInMonth = {
-        1 : 31,
-        2 : 28,
-        3 : 31,
-        4 : 30,
-        5 : 31,
-        6 : 30,
-        7 : 31,
-        8 : 31,
-        9 : 30,
+        1: 31,
+        2: 28,
+        3: 31,
+        4: 30,
+        5: 31,
+        6: 30,
+        7: 31,
+        8: 31,
+        9: 30,
         10: 31,
         11: 30,
         12: 31,
     }
 
-    if(mounth == 2){
-        if(isBicestYear(year)){
+    if (mounth == 2) {
+        if (isBicestYear(year)) {
             return 29
         }
     }
@@ -83,17 +92,17 @@ function getMaxDaysInMonth(mounth, year){
 /**
  * Atualiza e povo o select de dias
  */
-function populateHireDaysSelector(){
+function populateHireDaysSelector() {
 
     let selectedHireMonth = hiredDate.months.find(':selected').val();
     let selectedHireYear = hiredDate.years.val();
 
-    if(!selectedHireMonth){
+    if (!selectedHireMonth) {
         selectedHireMonth = 1;
     }
-    
+
     let maxDays = getMaxDaysInMonth(selectedHireMonth, selectedHireYear);
-    
+
 
     hiredDate.day.find('option').remove();
 
@@ -108,45 +117,55 @@ function populateHireDaysSelector(){
 /**
  * Popula o selector de dias da data final do trabalho
  */
-function populateWorkOutDaysSelector(){
-   
-    let selectedMonth = workOutDate.months.val();
-    let selectedYear = workOutDate.years.val();
+function populateWorkOutDaysSelector() {
 
-    let selectedHireDay = hiredDate.day.val();
-    let selectedHireMonth = hiredDate.months.val();
+    let selectedMonth = parseInt(workOutDate.months.val());
+    let selectedYear = parseInt(workOutDate.years.val());
 
-    let selectedHireYear =  hiredDate.years.val();
-    
+    let selectedHireMonth = parseInt(hiredDate.months.val());
+
+    let selectedHireDay = parseInt(hiredDate.day.val());
+    let selectedWorkOutDay = parseInt(workOutDate.day.val());
+
     let maxDays = getMaxDaysInMonth(selectedMonth, selectedYear);
 
     workOutDate.day.find("option").remove();
 
-    if(selectedHireDay != 0 && selectedMonth == selectedHireMonth && selectedYear == selectedHireYear){
-        
-        for (let index = selectedHireDay; index <= maxDays; index++) {
-            let $option = `<option value="${index}"> ${index}`
-            workOutDate.day.append($option);
-        }
+    let isSameMonthAndYear = selectedMonth == selectedHireMonth && isDatesWithSameYear();
+    let initialDay = isSameMonthAndYear ? selectedHireDay : 1
 
-    } else {
 
-        for (let index = 1; index <= maxDays; index++) {
-            let $option = `<option value="${index}"> ${index}`
-            workOutDate.day.append($option);
-        }
+    for (let index = initialDay; index <= maxDays; index++) {
+        let $option = `<option value="${index}"> ${index}`
+        workOutDate.day.append($option);
     }
+
+    if (!selectedWorkOutDay) {
+        selectedWorkOutDay = 1;
+    }
+
+    if (isDatesWithSameYear() && isDatesWithSameMonth()) {
+
+        if (selectedWorkOutDay <= selectedHireDay) {
+            workOutDate.day.val(selectedHireDay).trigger("change");
+        } else {
+            workOutDate.day.val(selectedWorkOutDay).trigger("change");
+        }
+    } else {
+        workOutDate.day.val(selectedWorkOutDay).trigger("change");
+    }
+
 }
 
 /**
  * Povoa o selector de meses com todos respectivos meses
  */
-function populateHireMonthSelector(){
+function populateHireMonthSelector() {
 
     for (let index = 1; index <= 12; index++) {
-        
+
         let $option = `<option value="${index}">${months[index]}</option>`
-        
+
         hiredDate.months.append($option);
     }
 }
@@ -154,19 +173,34 @@ function populateHireMonthSelector(){
 /**
  * popula o selector de meses da data de saida do trabalho
  */
-function populateWorkOutMonthSelector(){
+function populateWorkOutMonthSelector() {
 
     let initialMonth = 1;
+    let currentWorkOutMonth = workOutDate.months.val();
 
     workOutDate.months.find("option").remove();
-    if(hiredDate.years.val() == workOutDate.years.val()){
+
+    if (isDatesWithSameYear()) {
         initialMonth = hiredDate.months.val();
     }
-    
+
     for (let index = initialMonth; index <= 12; index++) {
         let $option = `<option value="${index}">${months[index]}</option>`
         workOutDate.months.append($option);
     }
+
+    if (currentWorkOutMonth) {
+
+        if (isDatesWithSameYear()) {
+            if (parseInt(currentWorkOutMonth) >= parseInt(hiredDate.months.val())) {
+                workOutDate.months.val(currentWorkOutMonth).trigger("change");
+            }
+        } else {
+            workOutDate.months.val(currentWorkOutMonth).trigger("change");
+        }
+
+    }
+
 }
 
 /**
@@ -184,24 +218,24 @@ function populateHireYearSelector() {
     }
 }
 
-function populateWorkOutYearSelector(){
-    
+function populateWorkOutYearSelector() {
+
     let hireYear = hiredDate.years.val();
     let workOutYear = workOutDate.years.val();
-    
+
     let maxYear = hiredDate.years.find("option:last-child").val();
 
     workOutDate.years.find("option").remove()
 
     for (let year = hireYear; year <= maxYear; year++) {
 
-        let isSelected = year == workOutYear && workOutYear >=  hireYear;
-    
+        let isSelected = year == workOutYear && workOutYear >= hireYear;
+
         let $option = `<option value="${year}" >${year}</option>`
-        
+
         workOutDate.years.prepend($option);
 
-        if(isSelected){
+        if (isSelected) {
             workOutDate.years.val(workOutYear).trigger('change');
         }
     }
@@ -213,10 +247,9 @@ hiredDate.years.on("change", () => {
     hiredDate.months.trigger("change");
 })
 
-hiredDate.months.on("change", function(){
-    populateWorkOutMonthSelector();
+hiredDate.months.on("change", function () {
     populateHireDaysSelector();
-    populateWorkOutDaysSelector();
+    workOutDate.years.trigger("change");
 });
 
 hiredDate.day.on("change", () => {
@@ -225,6 +258,7 @@ hiredDate.day.on("change", () => {
 
 workOutDate.years.on("change", () => {
     populateWorkOutMonthSelector();
+    workOutDate.months.trigger("change");
 })
 
 workOutDate.months.on("change", () => {
@@ -234,19 +268,19 @@ workOutDate.months.on("change", () => {
 /**
  * função que executao após carregamento total da página.
  */
-$(function(){
-    
+$(function () {
+
     let $self = $(this);
 
     populateHireYearSelector();
     populateWorkOutYearSelector();
-    
+
     populateHireMonthSelector();
     populateWorkOutMonthSelector();
 
-    populateHireDaysSelector();    
+    populateHireDaysSelector();
     populateWorkOutDaysSelector();
 
-    
+
 
 })
