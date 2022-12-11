@@ -33,6 +33,50 @@ function isDatesWithSameMonth() {
     return workOutDate.months.val() == hiredDate.months.val()
 }
 
+// function calcDate() {
+    
+//     let monthWorked;
+
+//     let employee = {
+
+//         hiredDate: {
+//             'day': hiredDate.day.val(),
+//             'month': hiredDate.months.val(),
+//             'year': hiredDate.years.val(),
+//         },
+
+//         lastWorkedDate: {
+//             'day': workOutDate.day.val(),
+//             'month': workOutDate.months.val(),
+//             'year': workOutDate.years.val()
+//         },
+//     }
+    
+//     monthWorked = parseInt(employee.lastWorkedDate.month) - parseInt(employee.hiredDate.month);
+//     let workedDays;
+
+//     let maxDaysInMonth = getMaxDaysInMonth(employee.lastWorkedDate.month, employee.lastWorkedDate.year)
+
+//     workedDays = parseInt(maxDaysInMonth) - parseIntI(employee.lastWorkedDate.day)
+
+//     for (let months = monthWorked; months <= 12; months++) {
+       
+        
+//     }
+    
+//     yearsWorked = parseInt(employee.lastWorkedDate.year) - parseInt(employee.hiredDate.year);
+
+    
+//     // if(isDatesWithSameMonth() && isDatesWithSameYear()){
+//     //     daysWorked =  parseInt(employee.lastWorkedDate.day) - parseInt(employee.hiredDate.day);
+//     // } else {
+//     //     employee.lastWorkedDate.day
+//     // }
+
+//     console.log("você trabalhou: " + yearsWorked + " ano, " + monthWorked + " meses e " + daysWorked + " dias");
+
+// }
+
 
 /**
  * Retorna se o ano é bicesto
@@ -242,6 +286,7 @@ function populateWorkOutYearSelector() {
 }
 
 
+
 hiredDate.years.on("change", () => {
     populateWorkOutYearSelector();
     hiredDate.months.trigger("change");
@@ -250,6 +295,7 @@ hiredDate.years.on("change", () => {
 hiredDate.months.on("change", function () {
     populateHireDaysSelector();
     workOutDate.years.trigger("change");
+    
 });
 
 hiredDate.day.on("change", () => {
@@ -263,6 +309,11 @@ workOutDate.years.on("change", () => {
 
 workOutDate.months.on("change", () => {
     populateWorkOutDaysSelector();
+    workOutDate.day.trigger("change");
+})
+
+workOutDate.day.on("change", () => {
+    calcDate();
 })
 
 /**
@@ -280,6 +331,8 @@ $(function () {
 
     populateHireDaysSelector();
     populateWorkOutDaysSelector();
+
+    calcDate();
 
 
 
