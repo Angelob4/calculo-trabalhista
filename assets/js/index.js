@@ -1,14 +1,118 @@
-const hiredDate = {
-    day: $("select[name='days']"),
-    months: $("select[name='months']"),
-    years: $("select[name='years']"),
-};
+const MILLISECONDS_INTO_DAY = (1000 * 60 * 60 * 24)
+const MILLISECONDS_INTO_MONTH = MILLISECONDS_INTO_DAY * 30;
+const MILLISECONDS_INTO_YEAR = MILLISECONDS_INTO_MONTH * 12;
 
-const workOutDate = {
-    day: $("select[name='work-out-days']"),
-    months: $("select[name='work-out-months']"),
-    years: $("select[name='work-out-years']"),
-};
+formatDate = (day, month, year) => {
+
+    pad = (int) => {
+        int = int < 10 ? '0' + int : int;
+        return int
+    }
+
+    return pad(month) + ' ' + pad(day) + ' ' + year;
+}
+
+/**
+ * Obtem milesegundos do tempo trabalhado desda entrada para empresa e saida da empresa
+ */
+const getMillisecondsWorked = () => {
+    return employee.workOut.getDate() - employee.hired.getDate();
+}
+
+/**
+ * converte milesegundos em mese(s)
+ * @param {Numeric} milliseconds 
+ */
+const convertMillisecondsToMonth = (milliseconds) => {
+    return milliseconds / MILLISECONDS_INTO_MONTH
+}
+
+const convertMillisecondsToYear = (milliseconds) => {
+    return parseInt(milliseconds / MILLISECONDS_INTO_YEAR);
+}
+
+/**
+ * Retorna quantos dias trabalhados dentro da data de saida da empresa vs entrada
+ * @returns {Date}
+ */
+const getDaysWorked = () => {
+    let days = new Date(getMillisecondsWorked());
+
+    return (days.setDate(days.getDate() + 1)) / MILLISECONDS_INTO_DAY;
+}
+
+/**
+ * retorna o cauclo de meses trabalhados
+ */
+const getMonthsWorked = () => {
+
+    // subtrai a data de saida pela de entrada em millescons
+    let millesconsOfDateWorked = getMillisecondsWorked();
+    
+    let date = new Date(millesconsOfDateWorked);
+    
+    millesconsOfDateWorked = date.setDate(date.getDate() + 1);
+    
+
+    return convertMillisecondsToMonth(millesconsOfDateWorked)
+}
+
+/**
+ * retorna o calculo de anos trabalhados
+ * @returns {Numeric}
+ */
+const getYearWorked = () => {
+    // subtrai a data de saida pela de entrada em millescons
+    let millesconsOfDateWorked = getMillisecondsWorked();
+
+    return convertMillisecondsToYear(millesconsOfDateWorked);
+}
+
+// O objeto representando o empregado e suas configurações
+const employee = {
+
+    hired: {
+        day: $("select[name='days']"),
+        month: $("select[name='months']"),
+        year: $("select[name='years']"),
+        getDate: () => {
+            let millesconsDate = formatDate(employee.hired.day.val(), employee.hired.month.val(), employee.hired.year.val());
+            return new Date(millesconsDate);
+        }
+    },
+
+    workOut: {
+        day: $("select[name='work-out-days']"),
+        month: $("select[name='work-out-months']"),
+        year: $("select[name='work-out-years']"),
+        getDate: () => {
+            let millesconsDate = formatDate(employee.workOut.day.val(), employee.workOut.month.val(), employee.workOut.year.val());
+            return new Date(millesconsDate);
+        }
+    },
+
+    // retorna o tempo de trabalhado na organização
+    getWorkingTime: () => {
+        
+        let days = getDaysWorked();
+        let months = getMonthsWorked();
+        let years = parseInt(getYearWorked());
+        
+        maxDays = getMaxDaysInMonth(employee.hired.month.val(), employee.hired.year.val());
+        
+        let workedDaysInFirstMonthHired = parseInt(maxDays) - parseInt(employee.hired.day.val());
+
+        months = months > 12 ? Math.round(months - (12 * years)) : Math.round(months);
+
+        return {
+            days: employee.workOut.day.val(),
+            months: months,
+            years: years
+        }
+
+    }
+
+}
 
 const months = {
     1: 'janeiro',
@@ -25,58 +129,15 @@ const months = {
     12: 'dezembro',
 };
 
+
+
 function isDatesWithSameYear() {
-    return workOutDate.years.val() == hiredDate.years.val()
+    return employee.workOut.year.val() == employee.hired.year.val()
 }
 
 function isDatesWithSameMonth() {
-    return workOutDate.months.val() == hiredDate.months.val()
+    return employee.workOut.month.val() == employee.hired.month.val()
 }
-
-// function calcDate() {
-    
-//     let monthWorked;
-
-//     let employee = {
-
-//         hiredDate: {
-//             'day': hiredDate.day.val(),
-//             'month': hiredDate.months.val(),
-//             'year': hiredDate.years.val(),
-//         },
-
-//         lastWorkedDate: {
-//             'day': workOutDate.day.val(),
-//             'month': workOutDate.months.val(),
-//             'year': workOutDate.years.val()
-//         },
-//     }
-    
-//     monthWorked = parseInt(employee.lastWorkedDate.month) - parseInt(employee.hiredDate.month);
-//     let workedDays;
-
-//     let maxDaysInMonth = getMaxDaysInMonth(employee.lastWorkedDate.month, employee.lastWorkedDate.year)
-
-//     workedDays = parseInt(maxDaysInMonth) - parseIntI(employee.lastWorkedDate.day)
-
-//     for (let months = monthWorked; months <= 12; months++) {
-       
-        
-//     }
-    
-//     yearsWorked = parseInt(employee.lastWorkedDate.year) - parseInt(employee.hiredDate.year);
-
-    
-//     // if(isDatesWithSameMonth() && isDatesWithSameYear()){
-//     //     daysWorked =  parseInt(employee.lastWorkedDate.day) - parseInt(employee.hiredDate.day);
-//     // } else {
-//     //     employee.lastWorkedDate.day
-//     // }
-
-//     console.log("você trabalhou: " + yearsWorked + " ano, " + monthWorked + " meses e " + daysWorked + " dias");
-
-// }
-
 
 /**
  * Retorna se o ano é bicesto
@@ -107,7 +168,7 @@ function isBicestYear(year) {
  * @returns Number
  */
 function getMaxDaysInMonth(mounth, year) {
-
+    // debugger
     let daysInMonth = {
         1: 31,
         2: 28,
@@ -138,8 +199,8 @@ function getMaxDaysInMonth(mounth, year) {
  */
 function populateHireDaysSelector() {
 
-    let selectedHireMonth = hiredDate.months.find(':selected').val();
-    let selectedHireYear = hiredDate.years.val();
+    let selectedHireMonth = employee.hired.month.find(':selected').val();
+    let selectedHireYear = employee.hired.year.val();
 
     if (!selectedHireMonth) {
         selectedHireMonth = 1;
@@ -148,13 +209,13 @@ function populateHireDaysSelector() {
     let maxDays = getMaxDaysInMonth(selectedHireMonth, selectedHireYear);
 
 
-    hiredDate.day.find('option').remove();
+    employee.hired.day.find('option').remove();
 
 
     for (let index = 1; index <= maxDays; index++) {
         let $option = `<option value="${index}"> ${index}`
 
-        hiredDate.day.append($option);
+        employee.hired.day.append($option);
     }
 }
 
@@ -163,17 +224,17 @@ function populateHireDaysSelector() {
  */
 function populateWorkOutDaysSelector() {
 
-    let selectedMonth = parseInt(workOutDate.months.val());
-    let selectedYear = parseInt(workOutDate.years.val());
+    let selectedMonth = parseInt(employee.workOut.month.val());
+    let selectedYear = parseInt(employee.workOut.year.val());
 
-    let selectedHireMonth = parseInt(hiredDate.months.val());
+    let selectedHireMonth = parseInt(employee.hired.month.val());
 
-    let selectedHireDay = parseInt(hiredDate.day.val());
-    let selectedWorkOutDay = parseInt(workOutDate.day.val());
+    let selectedHireDay = parseInt(employee.hired.day.val());
+    let selectedWorkOutDay = parseInt(employee.workOut.day.val());
 
     let maxDays = getMaxDaysInMonth(selectedMonth, selectedYear);
 
-    workOutDate.day.find("option").remove();
+    employee.workOut.day.find("option").remove();
 
     let isSameMonthAndYear = selectedMonth == selectedHireMonth && isDatesWithSameYear();
     let initialDay = isSameMonthAndYear ? selectedHireDay : 1
@@ -181,7 +242,7 @@ function populateWorkOutDaysSelector() {
 
     for (let index = initialDay; index <= maxDays; index++) {
         let $option = `<option value="${index}"> ${index}`
-        workOutDate.day.append($option);
+        employee.workOut.day.append($option);
     }
 
     if (!selectedWorkOutDay) {
@@ -191,12 +252,12 @@ function populateWorkOutDaysSelector() {
     if (isDatesWithSameYear() && isDatesWithSameMonth()) {
 
         if (selectedWorkOutDay <= selectedHireDay) {
-            workOutDate.day.val(selectedHireDay).trigger("change");
+            employee.workOut.day.val(selectedHireDay).trigger("change");
         } else {
-            workOutDate.day.val(selectedWorkOutDay).trigger("change");
+            employee.workOut.day.val(selectedWorkOutDay).trigger("change");
         }
     } else {
-        workOutDate.day.val(selectedWorkOutDay).trigger("change");
+        employee.workOut.day.val(selectedWorkOutDay).trigger("change");
     }
 
 }
@@ -210,7 +271,7 @@ function populateHireMonthSelector() {
 
         let $option = `<option value="${index}">${months[index]}</option>`
 
-        hiredDate.months.append($option);
+        employee.hired.month.append($option);
     }
 }
 
@@ -220,27 +281,27 @@ function populateHireMonthSelector() {
 function populateWorkOutMonthSelector() {
 
     let initialMonth = 1;
-    let currentWorkOutMonth = workOutDate.months.val();
+    let currentWorkOutMonth = employee.workOut.month.val();
 
-    workOutDate.months.find("option").remove();
+    employee.workOut.month.find("option").remove();
 
     if (isDatesWithSameYear()) {
-        initialMonth = hiredDate.months.val();
+        initialMonth = employee.hired.month.val();
     }
 
     for (let index = initialMonth; index <= 12; index++) {
         let $option = `<option value="${index}">${months[index]}</option>`
-        workOutDate.months.append($option);
+        employee.workOut.month.append($option);
     }
 
     if (currentWorkOutMonth) {
 
         if (isDatesWithSameYear()) {
-            if (parseInt(currentWorkOutMonth) >= parseInt(hiredDate.months.val())) {
-                workOutDate.months.val(currentWorkOutMonth).trigger("change");
+            if (parseInt(currentWorkOutMonth) >= parseInt(employee.hired.month.val())) {
+                employee.workOut.month.val(currentWorkOutMonth).trigger("change");
             }
         } else {
-            workOutDate.months.val(currentWorkOutMonth).trigger("change");
+            employee.workOut.month.val(currentWorkOutMonth).trigger("change");
         }
 
     }
@@ -258,18 +319,18 @@ function populateHireYearSelector() {
 
         let $option = `<option value="${index}" ${isSelected} >${index}</option>`
 
-        hiredDate.years.append($option);
+        employee.hired.year.append($option);
     }
 }
 
 function populateWorkOutYearSelector() {
 
-    let hireYear = hiredDate.years.val();
-    let workOutYear = workOutDate.years.val();
+    let hireYear = employee.hired.year.val();
+    let workOutYear = employee.workOut.year.val();
 
-    let maxYear = hiredDate.years.find("option:last-child").val();
+    let maxYear = employee.hired.year.find("option:last-child").val();
 
-    workOutDate.years.find("option").remove()
+    employee.workOut.year.find("option").remove()
 
     for (let year = hireYear; year <= maxYear; year++) {
 
@@ -277,51 +338,52 @@ function populateWorkOutYearSelector() {
 
         let $option = `<option value="${year}" >${year}</option>`
 
-        workOutDate.years.prepend($option);
+        employee.workOut.year.prepend($option);
 
         if (isSelected) {
-            workOutDate.years.val(workOutYear).trigger('change');
+            employee.workOut.year.val(workOutYear).trigger('change');
         }
     }
 }
 
 
 
-hiredDate.years.on("change", () => {
+employee.hired.year.on("change", () => {
     populateWorkOutYearSelector();
-    hiredDate.months.trigger("change");
+    employee.hired.month.trigger("change");
 })
 
-hiredDate.months.on("change", function () {
+employee.hired.month.on("change", function () {
     populateHireDaysSelector();
-    workOutDate.years.trigger("change");
-    
+    employee.workOut.year.trigger("change");
+
 });
 
-hiredDate.day.on("change", () => {
-    workOutDate.months.trigger("change");
+employee.hired.day.on("change", () => {
+    employee.workOut.month.trigger("change");
 })
 
-workOutDate.years.on("change", () => {
+employee.workOut.year.on("change", () => {
     populateWorkOutMonthSelector();
-    workOutDate.months.trigger("change");
+    employee.workOut.month.trigger("change");
 })
 
-workOutDate.months.on("change", () => {
+employee.workOut.month.on("change", () => {
     populateWorkOutDaysSelector();
-    workOutDate.day.trigger("change");
+    employee.workOut.day.trigger("change");
 })
 
-workOutDate.day.on("change", () => {
-    calcDate();
+employee.workOut.day.on("change", () => {
+    employee.getWorkingTime();
+
+    console.log(employee.getWorkingTime())
+
 })
 
 /**
  * função que executao após carregamento total da página.
  */
 $(function () {
-
-    let $self = $(this);
 
     populateHireYearSelector();
     populateWorkOutYearSelector();
@@ -331,9 +393,5 @@ $(function () {
 
     populateHireDaysSelector();
     populateWorkOutDaysSelector();
-
-    calcDate();
-
-
 
 })
